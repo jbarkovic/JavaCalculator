@@ -5,6 +5,7 @@ import exceptions.MathException;
 import exceptions.OperatorException;
 import exceptions.SyntaxException;
 import operators.*;
+import operators.arithmetic.array.GCDOperator;
 import operators.arithmetic.array.SumOperator;
 import operators.arithmetic.binary.AdditionOperator;
 import operators.arithmetic.binary.DifferenceOperator;
@@ -19,30 +20,29 @@ import operators.trig.unary.TrigOperator;
 public class Parser {
 	public int DEBUG = 0;
 	public double evaluate (String text) throws BracketsException, SyntaxException, MathException, OperatorException {
-		return parse(text).eval();
+			return parse(text).eval();		
 	}
-	public Operator parse (String text) throws BracketsException {
+	public Operator parse (String text) throws BracketsException, SyntaxException {
 		char [] textArray = text.toCharArray();
 		int bCount;
 		if ((bCount=countBrackets(textArray,0,textArray.length))!=0) throw new BracketsException (""+bCount); 
 		return recursiveOrderOfOperations (textArray,0,textArray.length);
 	}
-	private Operator recursiveOrderOfOperations (char [] text, int start, int end) {
+	private Operator recursiveOrderOfOperations (char [] text, int start, int end) throws SyntaxException {
 		Operator op = null;
 		if (start >= end) {
 			if (DEBUG > 0) System.out.println("ERROR: start >= end: start: " + start + " , end: " + end);
 			return null;
 		}
 		if ((op=recursiveBracketParse(text,start,end))!=null) return op;
+		if ((op=functionArgsParser(text,start,end))!=null) return op;
 		if ((op=recursiveAddSubParse(text,start,end))!=null) return op;
 		if ((op=recursiveMultDivParse(text,start,end))!=null) return op;
 		if ((op=recursiveExponentParse(text,start,end))!=null) return op;
 		if ((op=recursiveFunctionParse(text,start,end))!=null) return op;
 		if ((op=recursiveTrigFunctionParse(text,start,end))!=null) return op;
-		if ((op=functionArgsParser(text,start,end))!=null) return op;
 		if ((op=numberParse(text,start,end))!=null)  return op;
-		else if (DEBUG > 0) System.out.println("Numbers returned null");
-		return null;
+		throw new SyntaxException("Could not parse: " + String.copyValueOf(text, start, end-start));
 	}
 	private int countBrackets (char [] text, int start, int end) {
 		int count = 0;
@@ -66,7 +66,7 @@ public class Parser {
 			return null;
 		}
 	}
-	private Operator recursiveBracketParse (char [] text, int start, int end) {
+	private Operator recursiveBracketParse (char [] text, int start, int end) throws SyntaxException {
 		if (DEBUG > 0) System.out.println ("BRACKETS checking string: " + String.copyValueOf(text, start, end-start));
 		if (start >= end) return null;
 		for (int ptr = start;ptr<end;ptr++) {
@@ -83,7 +83,7 @@ public class Parser {
 		}
 		return null;
 	}
-	private Operator recursiveExponentParse (char [] text, int start, int end) {
+	private Operator recursiveExponentParse (char [] text, int start, int end) throws SyntaxException {
 		if (DEBUG > 0) System.out.println ("EXPONENT checking string: " + String.copyValueOf(text, start, end-start));
 		if (start >= end) return null;
 		int bracketCount = 0;
@@ -97,7 +97,7 @@ public class Parser {
 		}
 		return null;
 	}
-	private Operator recursiveMultDivParse (char [] text, int start, int end) {
+	private Operator recursiveMultDivParse (char [] text, int start, int end) throws SyntaxException {
 		if (DEBUG > 0) System.out.println ("MUL/DIV checking string: " + String.copyValueOf(text, start, end-start));
 		if (start >= end) return null;
 		int bracketCount = 0;
@@ -113,7 +113,7 @@ public class Parser {
 		}
 		return null;
 	}
-	private Operator recursiveAddSubParse (char [] text, int start, int end) {
+	private Operator recursiveAddSubParse (char [] text, int start, int end) throws SyntaxException {
 		if (DEBUG > 0) System.out.println ("ADD/SUB checking string: " + String.copyValueOf(text, start, end-start));
 		if (start >= end) return null;
 		int bracketCount = 0;
@@ -129,33 +129,42 @@ public class Parser {
 		}
 		return null;
 	}
-	private VectorOperand functionArgsParser (char [] text, int start, int end) {
+	private VectorOperand functionArgsParser (char [] text, int start, int end) throws SyntaxException {
 		if (DEBUG > 0) System.out.println ("COMMA stating checking string: " + String.copyValueOf(text, start, end-start));
+		int bracketCount = 0;
 		for (int ptr=start;ptr<end;ptr++) {
 			char point = text[ptr];
-			if (point == ',') {
+			if (point == ',' && bracketCount==0) {
 				return recursiveFunctionArgsParse (text,start,end);
-			}
+			} else if (point=='(') bracketCount++;
+			else if (point==')') bracketCount--;
 		}
 		return null;
 	}
-	private VectorOperand recursiveFunctionArgsParse (char [] text, int start, int end) {
+	private VectorOperand recursiveFunctionArgsParse (char [] text, int start, int end) throws SyntaxException {
 		if (DEBUG > 0) System.out.println ("COMMA checking string: " + String.copyValueOf(text, start, end-start));
+		int bracketCount = 0;
 		for (int ptr=start;ptr<end;ptr++) {
 			char point = text[ptr];
-			if (point == ',') {
-				VectorOperand vector = recursiveFunctionArgsParse(text,ptr+1,end);
-				vector.add(recursiveOrderOfOperations(text,start,ptr));
+			
+			if (point == ','&&bracketCount==0) {
+				VectorOperand vector = new VectorOperand(recursiveOrderOfOperations(text,start,ptr));
+				vector.add(recursiveOrderOfOperations(text,ptr+1,end));
 				return vector;
-			}
+			} else if (point=='(') bracketCount++;
+			else if (point==')') bracketCount--;
 		}
 		return new VectorOperand(recursiveOrderOfOperations(text,start,end));
 	}
-	private Operator recursiveFunctionParse (char [] text, int start, int end) {
+	private Operator recursiveFunctionParse (char [] text, int start, int end) throws SyntaxException {
 		if (DEBUG > 0) System.out.println ("FUNCTION checking string: " + String.copyValueOf(text, start, end-start));
 		if (start >= end) return null;
 		String fnStr = String.copyValueOf(text, start, end-start);
 		fnStr = fnStr.toLowerCase();
+		if (firstNonSpaceCharIndex (text,start,end) > start) {
+			if (DEBUG > 1) System.out.println("Function: stripping spaces");
+			return recursiveFunctionParse (text,firstNonSpaceCharIndex(text,start,end),end);
+		}
 		if (fnStr.startsWith("max")) {
 			fnStr = fnStr.replaceFirst("max","");
 			return new MaxOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
@@ -183,15 +192,14 @@ public class Parser {
 			fnStr = fnStr.replaceFirst("add","");
 			return new SumOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
 		}
-		else if (fnStr.startsWith("sum")||fnStr.startsWith("add")) {
-			fnStr = fnStr.replaceFirst("sum","");
-			fnStr = fnStr.replaceFirst("add","");
-			return new SumOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
+		else if (fnStr.startsWith("gcd")) {
+			fnStr = fnStr.replaceFirst("gcd","");
+			return new GCDOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
 		}
 		if (DEBUG>0) System.out.println("FUNCTION no functions were found");
 		return null;
 	}
-	private Operator recursiveTrigFunctionParse (char [] text, int start, int end) {
+	private Operator recursiveTrigFunctionParse (char [] text, int start, int end) throws SyntaxException {
 		if (DEBUG > 0) System.out.println ("TRIG checking string: " + java.lang.String.copyValueOf(text, start, end-start));
 		if (start >= end) return null;
 		String fnStr = java.lang.String.copyValueOf(text, start, end-start);

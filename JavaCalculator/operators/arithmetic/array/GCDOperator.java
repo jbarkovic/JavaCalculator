@@ -1,4 +1,4 @@
-package operators.arithmetic.binary;
+package operators.arithmetic.array;
 
 import java.util.List;
 import java.util.ListIterator;
@@ -25,13 +25,17 @@ public class GCDOperator extends SortedVectorOperator {
 		sort();
 		Operator min = list.get(0);
 		double gcd = min.eval();
+		if (gcd % 1 != 0) throw new MathException("Not an Integer: " + gcd);
 		ListIterator<Operator> li = list.listIterator(1);
 		while (li.hasNext()) {
-			gcd = recursiveGCD(gcd,li.next().eval());
+			double val = li.next().eval();
+			if (val % 1 != 0) throw new MathException("Not an Integer: " + val);
+			if (Math.floor(val) != val) throw new MathException("Not an Integer: " + val);
+			gcd = recursiveGCD(gcd,val);
 		}
 		return gcd;
 	}
-	private double recursiveGCD (double num0, double num1) {
+	private double recursiveGCD (double num0, double num1) {		
 		double large = Math.max(num0, num1);
 		double small = Math.min(num0, num1);
 		double div = large / small;
