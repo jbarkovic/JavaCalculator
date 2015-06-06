@@ -1,4 +1,4 @@
-package operators.unary;
+package operators.trig.unary;
 
 import exceptions.MathException;
 import exceptions.OperatorException;

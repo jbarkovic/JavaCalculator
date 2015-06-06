@@ -15,7 +15,7 @@ import operators.stats.array.AverageOperator;
 import operators.stats.array.MaxOperator;
 import operators.stats.array.MinOperator;
 import operators.stats.array.ModeOperator;
-import operators.unary.TrigOperator;
+import operators.trig.unary.TrigOperator;
 public class Parser {
 	public int DEBUG = 0;
 	public double evaluate (String text) throws BracketsException, SyntaxException, MathException, OperatorException {
