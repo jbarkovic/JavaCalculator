@@ -8,9 +8,7 @@ import operators.VectorOperand;
 import platform.Platform;
 
 public class NthRootOperator extends BinaryOperator {
-	public NthRootOperator(Operator a) {
-		super(new Constant(2d), a);
-	}
+	int n = 2;
 	public NthRootOperator(Constant n, Operator a) {
 		super (n,a);
 	}
@@ -30,7 +28,7 @@ public class NthRootOperator extends BinaryOperator {
 			if (a < 0d) {
 				throw new MathException("Root cannot take negative number");
 			} else if (n%1!=0d){
-				throw new MathException("N must be an Integer");
+				throw new MathException(n + " must be an Integer");
 			} else {
 				return iterrativeNthRootFinder((int)n,a);
 			}
