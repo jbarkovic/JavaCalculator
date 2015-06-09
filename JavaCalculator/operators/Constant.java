@@ -13,4 +13,8 @@ public class Constant extends Operator{
 	public double eval () {
 		return value;
 	}
+	@Override
+	public double internalCalc () {
+		return value;
+	}
 }
