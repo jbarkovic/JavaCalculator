@@ -4,10 +4,10 @@ import exceptions.MathException;
 import exceptions.OperatorException;
 import exceptions.SyntaxException;
 
-public class Operator implements Comparable<Operator> {
+public abstract class Operator implements Comparable<Operator> {
 	double cachedResult = 0.0d;
 	boolean cacheValid = false;
-	public double eval () throws SyntaxException, MathException, OperatorException{		
+	public double eval () throws SyntaxException, MathException, OperatorException {	
 		if (cacheValid&&!changed()) {
 			return cachedResult;
 		} else {
@@ -48,7 +48,5 @@ public class Operator implements Comparable<Operator> {
 		}
 		return ours == theirs;
 	}
-	protected double internalCalc () throws SyntaxException, MathException, OperatorException {
-		return 0.0d;
-	}
+	protected abstract double internalCalc () throws SyntaxException, MathException, OperatorException;
 }
