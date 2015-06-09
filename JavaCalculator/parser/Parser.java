@@ -16,6 +16,9 @@ import operators.stats.array.AverageOperator;
 import operators.stats.array.MaxOperator;
 import operators.stats.array.MinOperator;
 import operators.stats.array.ModeOperator;
+import operators.trig.unary.CoshOperator;
+import operators.trig.unary.SinhOperator;
+import operators.trig.unary.TanhOperator;
 import operators.trig.unary.TrigOperator;
 public class Parser {
 	public int DEBUG = 0;
@@ -236,6 +239,21 @@ public class Parser {
 		else if (isFunction("atan",fnStr)) {
 			fnStr = fnStr.replaceFirst("atan", "");
 			func = TrigOperator.Function.ATAN;
+		}
+		else if (isFunction("sinh",fnStr)) {
+			fnStr = fnStr.replaceFirst("sinh", "");
+			func = null;
+			return new SinhOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
+		}
+		else if (isFunction("cosh",fnStr)) {
+			fnStr = fnStr.replaceFirst("cosh", "");
+			func = null;
+			return new CoshOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
+		}
+		else if (isFunction("tanh",fnStr)) {
+			fnStr = fnStr.replaceFirst("tanh", "");
+			func = null;
+			return new TanhOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
 		}
 		if (func != null) return new TrigOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()),func);
 		else return null;
