@@ -3,7 +3,8 @@ package operators;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VectorOperator extends Operator {
+
+public abstract class VectorOperator extends Operator {
 	protected List<Operator> list;
 	public VectorOperator (Operator op0) {
 		if (op0 instanceof VectorOperand) {
