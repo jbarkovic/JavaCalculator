@@ -39,8 +39,7 @@ public class NthRootOperator extends BinaryOperator {
 		final double e = Platform.PRECISION;
 		final int n_m1 = n-1;
 		double dxk = e + 1d;
-
-		while (dxk >= e) {
+		while (Math.abs(dxk) >= e) {
 			// Loop unrolled 3 times (may end up being a little bit more precise)
 			xk = xk + dxk;
 			dxk = invN*((a/Math.pow(xk,n_m1) - xk));
