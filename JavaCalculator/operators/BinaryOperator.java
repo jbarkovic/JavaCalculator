@@ -1,8 +1,6 @@
 package operators;
 
-
-
-public class BinaryOperator extends Operator {
+public abstract class BinaryOperator extends Operator {
 	protected Operator op0;
 	protected Operator op1;
 	
