@@ -11,6 +11,9 @@ public class NthRootOperator extends BinaryOperator {
 	public NthRootOperator(Operator a) {
 		super(new Constant(2d), a);
 	}
+	public NthRootOperator(Constant n, Operator a) {
+		super (n,a);
+	}
 	public NthRootOperator(VectorOperand v) {
 		/* If v has only one element, treat as a square root
 		 * Else If v has multiple elements, treat as nthRoot, but only take the first two elements
