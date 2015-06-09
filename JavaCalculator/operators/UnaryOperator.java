@@ -4,7 +4,7 @@ import exceptions.MathException;
 import exceptions.OperatorException;
 import exceptions.SyntaxException;
 
-public class UnaryOperator extends Operator{
+public abstract class UnaryOperator extends Operator{
 	protected Operator op0;
 	public UnaryOperator (Operator op0) {
 		this.op0 = op0;
