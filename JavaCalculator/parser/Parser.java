@@ -13,7 +13,7 @@ import operators.arithmetic.binary.DifferenceOperator;
 import operators.arithmetic.binary.DivisionOperator;
 import operators.arithmetic.binary.ExponentialOperator;
 import operators.arithmetic.binary.MultiplicationOperator;
-import operators.arithmetic.unary.NthRootOperator;
+import operators.arithmetic.binary.NthRootOperator;
 import operators.stats.array.AverageOperator;
 import operators.stats.array.MaxOperator;
 import operators.stats.array.MedianOperator;
