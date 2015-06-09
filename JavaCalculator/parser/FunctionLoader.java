@@ -13,7 +13,6 @@ public class FunctionLoader<F extends Operator> {
 	}
 	public F load (Parser parser, String remain) {
 		try {
-			System.out.println("Function parser recursing... " + funcClass.getCanonicalName());
 			return this.funcClass.getConstructor(Operator.class).newInstance(parser.parse(remain));
 		} catch (InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException
