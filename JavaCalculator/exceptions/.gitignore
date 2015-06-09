@@ -2,3 +2,5 @@
 /MathException.class
 /OperatorException.class
 /SyntaxException.class
+/OverflowException.class
+/PrecisionException.class

@@ -4,3 +4,5 @@
 /ExponentialOperator.class
 /GCDOperator.class
 /MultiplicationOperator.class
+/NRootOperator.class
+/SquareRootOperator.class
