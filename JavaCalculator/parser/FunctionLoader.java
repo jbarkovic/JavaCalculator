@@ -1,0 +1,27 @@
+package parser;
+
+import java.lang.reflect.InvocationTargetException;
+
+import exceptions.BracketsException;
+import exceptions.SyntaxException;
+import operators.Operator;
+
+public class FunctionLoader<F extends Operator> {
+	private Class<F> funcClass;
+	public FunctionLoader(Class<F> clazz) {
+		this.funcClass = clazz;
+	}
+	public F load (Parser parser, String remain) {
+		try {
+			System.out.println("Function parser recursing... " + funcClass.getCanonicalName());
+			return this.funcClass.getConstructor(Operator.class).newInstance(parser.parse(remain));
+		} catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException | BracketsException
+				| SyntaxException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+}

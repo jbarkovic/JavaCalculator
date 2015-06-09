@@ -1,3 +1,8 @@
 /Parser$BracketsException.class
 /Parser.class
 /Parser$Match.class
+/FunctionParser.class
+/FunctionParser$Function.class
+/FunctionParser$FunctionMatch.class
+/FunctionParser$MutableStringContainer.class
+/FunctionLoader.class
