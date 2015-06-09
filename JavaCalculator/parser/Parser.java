@@ -1,6 +1,7 @@
 package parser;
 
 
+import exceptions.BracketsException;
 import exceptions.MathException;
 import exceptions.OperatorException;
 import exceptions.SyntaxException;
@@ -12,8 +13,10 @@ import operators.arithmetic.binary.DifferenceOperator;
 import operators.arithmetic.binary.DivisionOperator;
 import operators.arithmetic.binary.ExponentialOperator;
 import operators.arithmetic.binary.MultiplicationOperator;
+import operators.arithmetic.unary.NthRootOperator;
 import operators.stats.array.AverageOperator;
 import operators.stats.array.MaxOperator;
+import operators.stats.array.MedianOperator;
 import operators.stats.array.MinOperator;
 import operators.stats.array.ModeOperator;
 import operators.trig.unary.CoshOperator;
@@ -188,7 +191,7 @@ public class Parser {
 		else if (fnStr.startsWith("median")||fnStr.startsWith("med")) {
 			fnStr = fnStr.replaceFirst("median","");
 			fnStr = fnStr.replaceFirst("med","");
-			return new MaxOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
+			return new MedianOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
 		}
 		else if (fnStr.startsWith("sum")||fnStr.startsWith("add")) {
 			fnStr = fnStr.replaceFirst("sum","");
@@ -200,8 +203,8 @@ public class Parser {
 			return new GCDOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
 		}
 		else if (fnStr.startsWith("sqrt")) {
-			fnStr = fnStr.replaceFirst("gcd","");
-			return new GCDOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
+			fnStr = fnStr.replaceFirst("sqrt","");
+			return new NthRootOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
 		}
 		if (DEBUG>0) System.out.println("FUNCTION no functions were found");
 		return null;
@@ -216,41 +219,41 @@ public class Parser {
 			return recursiveTrigFunctionParse (text,firstNonSpaceCharIndex(text,start,end),end);
 		}
 		TrigOperator.Function func = null;
-		if (isFunction("sin",fnStr)) {
+		if (isFunction("sin",fnStr).matches) {
 			fnStr = fnStr.replaceFirst("sin", "");
 			func = TrigOperator.Function.SIN;
 		}
-		else if (isFunction("cos",fnStr)) {
+		else if (isFunction("cos",fnStr).matches) {
 			fnStr = fnStr.replaceFirst("cos", "");
 			func = TrigOperator.Function.COS;			
 		}
-		else if (isFunction("tan",fnStr)) {
+		else if (isFunction("tan",fnStr).matches) {
 			fnStr = fnStr.replaceFirst("tan", "");
 			func = TrigOperator.Function.TAN;
 		}
-		else if (isFunction("asin",fnStr)) {
+		else if (isFunction("asin",fnStr).matches) {
 			fnStr = fnStr.replaceFirst("asin", "");
 			func = TrigOperator.Function.ASIN;
 		}
-		else if (isFunction("acos",fnStr)) {
+		else if (isFunction("acos",fnStr).matches) {
 			fnStr = fnStr.replaceFirst("acos", "");
 			func = TrigOperator.Function.ACOS;
 		}
-		else if (isFunction("atan",fnStr)) {
+		else if (isFunction("atan",fnStr).matches) {
 			fnStr = fnStr.replaceFirst("atan", "");
 			func = TrigOperator.Function.ATAN;
 		}
-		else if (isFunction("sinh",fnStr)) {
+		else if (isFunction("sinh",fnStr).matches) {
 			fnStr = fnStr.replaceFirst("sinh", "");
 			func = null;
 			return new SinhOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
 		}
-		else if (isFunction("cosh",fnStr)) {
+		else if (isFunction("cosh",fnStr).matches) {
 			fnStr = fnStr.replaceFirst("cosh", "");
 			func = null;
 			return new CoshOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
 		}
-		else if (isFunction("tanh",fnStr)) {
+		else if (isFunction("tanh",fnStr).matches) {
 			fnStr = fnStr.replaceFirst("tanh", "");
 			func = null;
 			return new TanhOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
@@ -258,8 +261,23 @@ public class Parser {
 		if (func != null) return new TrigOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()),func);
 		else return null;
 	}
-	private boolean isFunction (String functionName, String text) {
-		return memcmp(functionName,text) == (functionName.length());
+	private Match isFunction (String [] possibles, String text) {
+		if (possibles == null) return new Match(false);
+		else {
+			for (String s : possibles) {
+				if(text.startsWith(s)) {
+					return new Match (true,s,text.replaceFirst(s, ""));
+				}
+			}
+			return new Match (false);
+		}
+	}
+	private Match isFunction (String functionName, String text) {
+		if(memcmp(functionName,text) == (functionName.length())) {
+			return new Match (true, functionName, text.replaceFirst(functionName, ""));
+		} else {
+			return new Match(false);
+		}
 	}
 	private int memcmp (String str0, String str1) {
 		if (str0 == null || str1 == null) return 0;
@@ -278,12 +296,22 @@ public class Parser {
 		}
 		return ptr;
 	}
-	public class BracketsException extends Exception {
-
-		private static final long serialVersionUID = 3226778408206742196L;
-
-		public BracketsException(String string) {
-			super (string);
-		}		
+	private class Match {
+		private boolean matches;
+		private String match;
+		private String stripped;
+		{
+			matches = false;
+			match  = "";
+			stripped = "";
+		}
+		protected Match (boolean result) {
+			matches = result;
+		}
+		protected Match (boolean result, String winner, String strippedText) {
+			matches = result;
+			match = winner;
+			stripped = strippedText;
+		}
 	}
 }

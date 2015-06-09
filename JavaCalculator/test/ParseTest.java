@@ -1,10 +1,10 @@
 package test;
 
+import exceptions.BracketsException;
 import exceptions.MathException;
 import exceptions.OperatorException;
 import exceptions.SyntaxException;
 import parser.Parser;
-import parser.Parser.BracketsException;
 
 public class ParseTest {
 	public static void main (String [] args) {
