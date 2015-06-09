@@ -6,25 +6,18 @@ import exceptions.MathException;
 import exceptions.OperatorException;
 import exceptions.SyntaxException;
 import operators.*;
-import operators.arithmetic.array.GCDOperator;
-import operators.arithmetic.array.SumOperator;
 import operators.arithmetic.binary.AdditionOperator;
 import operators.arithmetic.binary.DifferenceOperator;
 import operators.arithmetic.binary.DivisionOperator;
 import operators.arithmetic.binary.ExponentialOperator;
 import operators.arithmetic.binary.MultiplicationOperator;
-import operators.arithmetic.binary.NthRootOperator;
-import operators.stats.array.AverageOperator;
-import operators.stats.array.MaxOperator;
-import operators.stats.array.MedianOperator;
-import operators.stats.array.MinOperator;
-import operators.stats.array.ModeOperator;
 import operators.trig.unary.CoshOperator;
 import operators.trig.unary.SinhOperator;
 import operators.trig.unary.TanhOperator;
 import operators.trig.unary.TrigOperator;
 public class Parser {
 	public int DEBUG = 0;
+	private FunctionParser fnParser = new FunctionParser();
 	public double evaluate (String text) throws BracketsException, SyntaxException, MathException, OperatorException {
 			return parse(text).eval();		
 	}
@@ -58,6 +51,17 @@ public class Parser {
 			else if (point==')') count--;
 		}
 		return count;
+	}
+	private Operator recursiveFunctionParse (char [] text, int start, int end) {
+		if (DEBUG > 0) System.out.println ("FUNCTION checking string: " + String.copyValueOf(text, start, end-start));
+		if (start >= end) return null;
+		String fnStr = String.copyValueOf(text, start, end-start);
+		fnStr = fnStr.toLowerCase();
+		if (firstNonSpaceCharIndex (text,start,end) > start) {
+			if (DEBUG > 1) System.out.println("Function: stripping spaces");
+			return recursiveFunctionParse (text,firstNonSpaceCharIndex(text,start,end),end);
+		}
+		return fnParser.parse(text, start, end, this);		
 	}
 	private Operator numberParse(char [] text, int start, int end) {
 		if (DEBUG > 0) System.out.println ("NUMBERS checking string: " + String.copyValueOf(text, start, end-start));
@@ -161,53 +165,6 @@ public class Parser {
 			else if (point==')') bracketCount--;
 		}
 		return new VectorOperand(recursiveOrderOfOperations(text,start,end));
-	}
-	private Operator recursiveFunctionParse (char [] text, int start, int end) throws SyntaxException {
-		if (DEBUG > 0) System.out.println ("FUNCTION checking string: " + String.copyValueOf(text, start, end-start));
-		if (start >= end) return null;
-		String fnStr = String.copyValueOf(text, start, end-start);
-		fnStr = fnStr.toLowerCase();
-		if (firstNonSpaceCharIndex (text,start,end) > start) {
-			if (DEBUG > 1) System.out.println("Function: stripping spaces");
-			return recursiveFunctionParse (text,firstNonSpaceCharIndex(text,start,end),end);
-		}
-		if (fnStr.startsWith("max")) {
-			fnStr = fnStr.replaceFirst("max","");
-			return new MaxOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
-		}
-		else if (fnStr.startsWith("min")) {
-			fnStr = fnStr.replaceFirst("min","");
-			return new MinOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
-		}
-		else if (fnStr.startsWith("average")||fnStr.startsWith("avg")) {
-			fnStr = fnStr.replaceFirst("average","");
-			fnStr = fnStr.replaceFirst("avg","");
-			return new AverageOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
-		}
-		else if (fnStr.startsWith("mode")) {
-			fnStr = fnStr.replaceFirst("mode","");
-			return new ModeOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
-		}
-		else if (fnStr.startsWith("median")||fnStr.startsWith("med")) {
-			fnStr = fnStr.replaceFirst("median","");
-			fnStr = fnStr.replaceFirst("med","");
-			return new MedianOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
-		}
-		else if (fnStr.startsWith("sum")||fnStr.startsWith("add")) {
-			fnStr = fnStr.replaceFirst("sum","");
-			fnStr = fnStr.replaceFirst("add","");
-			return new SumOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
-		}
-		else if (fnStr.startsWith("gcd")) {
-			fnStr = fnStr.replaceFirst("gcd","");
-			return new GCDOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
-		}
-		else if (fnStr.startsWith("sqrt")) {
-			fnStr = fnStr.replaceFirst("sqrt","");
-			return new NthRootOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
-		}
-		if (DEBUG>0) System.out.println("FUNCTION no functions were found");
-		return null;
 	}
 	private Operator recursiveTrigFunctionParse (char [] text, int start, int end) throws SyntaxException {
 		if (DEBUG > 0) System.out.println ("TRIG checking string: " + java.lang.String.copyValueOf(text, start, end-start));
