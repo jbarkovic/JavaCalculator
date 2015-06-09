@@ -1,10 +1,11 @@
-package operators.arithmetic.unary;
+package operators.arithmetic.binary;
 
 import exceptions.*;
 import operators.BinaryOperator;
 import operators.Constant;
 import operators.Operator;
 import operators.VectorOperand;
+import platform.Platform;
 
 public class NthRootOperator extends BinaryOperator {
 	public NthRootOperator(Operator a) {
@@ -34,8 +35,8 @@ public class NthRootOperator extends BinaryOperator {
 	}
 	private double iterrativeNthRootFinder (final int n, final double a) {
 		double xk = a/(n*n);
-		final double e = 0.0000001d;
 		final double invN = (1/(double)n);
+		final double e = Platform.PRECISION;
 		final int n_m1 = n-1;
 		double dxk = e + 1d;
 
