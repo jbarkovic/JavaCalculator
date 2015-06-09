@@ -2,7 +2,7 @@ package operators;
 
 import java.util.Collections;
 
-public class SortedVectorOperator extends VectorOperator {
+public abstract class SortedVectorOperator extends VectorOperator {
 	public SortedVectorOperator(Operator op0) {
 		super(op0);
 		sort();
