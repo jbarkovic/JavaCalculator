@@ -7,3 +7,6 @@
 /NRootOperator.class
 /SquareRootOperator.class
 /NthRootOperator.class
+/SqrtOperator.class
+/CubedRoot.class
+/CubedRootOperator.class
