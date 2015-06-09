@@ -196,6 +196,10 @@ public class Parser {
 			fnStr = fnStr.replaceFirst("gcd","");
 			return new GCDOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
 		}
+		else if (fnStr.startsWith("sqrt")) {
+			fnStr = fnStr.replaceFirst("gcd","");
+			return new GCDOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()));
+		}
 		if (DEBUG>0) System.out.println("FUNCTION no functions were found");
 		return null;
 	}
@@ -236,8 +240,8 @@ public class Parser {
 		if (func != null) return new TrigOperator(recursiveOrderOfOperations(fnStr.toCharArray(),0,fnStr.length()),func);
 		else return null;
 	}
-	private boolean isFunction (String text, String functionName) {
-		return memcmp(functionName,text) == functionName.length();
+	private boolean isFunction (String functionName, String text) {
+		return memcmp(functionName,text) == (functionName.length());
 	}
 	private int memcmp (String str0, String str1) {
 		if (str0 == null || str1 == null) return 0;
