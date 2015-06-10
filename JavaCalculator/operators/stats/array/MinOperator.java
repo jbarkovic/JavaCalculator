@@ -9,7 +9,7 @@ import operators.Operator;
 public class MinOperator extends VectorOperator {
 	public MinOperator (Operator op0) {
 		super (op0);
-	}
+	}	
 	@Override
 	public double internalCalc () throws SyntaxException, MathException, OperatorException {
 		double min = Double.POSITIVE_INFINITY;

@@ -2,36 +2,42 @@ package operators.arithmetic.binary;
 
 import exceptions.*;
 import operators.BinaryOperator;
-import operators.Constant;
 import operators.Operator;
 import operators.VectorOperand;
 import platform.Platform;
 
 public class NthRootOperator extends BinaryOperator {
-	int n = 2;
-	public NthRootOperator(Constant n, Operator a) {
-		super (n,a);
+	boolean tooManyArguments = false;
+	public NthRootOperator(Operator op0) {
+		super(op0);
+		if (op0 instanceof VectorOperand) {
+			tooManyArguments = true;
+		}
 	}
-	public NthRootOperator(VectorOperand v) {
-		/* If v has only one element, treat as a square root
-		 * Else If v has multiple elements, treat as nthRoot, but only take the first two elements
-		 * Else set up with what ever v is (probably empty list)
-		 */
-		super((v.size()<=1)?new Constant(2d):v.get(0),(v.size()>0)?(v.size()==1?v.get(0):v.get(1)):null);
+	public NthRootOperator(Operator op0, Operator op1) {
+		super(op0,op1);
 	}
 	@Override
 	public double internalCalc () throws SyntaxException, MathException, OperatorException {
-		double n = op0.eval();
-		if (op1==null) throw new SyntaxException("No argument to root");
-		else {
-			Double a = new Double(op1.eval());
-			if (a < 0d) {
-				throw new MathException("Root cannot take negative number");
-			} else if (n%1!=0d){
-				throw new MathException(n + " must be an Integer");
-			} else {
-				return iterrativeNthRootFinder((int)n,a);
-			}
+		double n = 2d;
+		Double a = 0d;
+		if (op0!=null&&op1!=null) {
+			n=op0.eval();
+			a = new Double(op1.eval());
+		} else if (op1!=null) {
+			a = new Double(op1.eval());
+		} else if (op0 !=null) {
+			a = new Double(op0.eval());
+		} else {
+			throw new SyntaxException("No arguments to NthRoot");
+		}
+		if (a < 0d) {
+			throw new MathException("Root cannot take negative number");
+		} else if (n%1!=0d){
+			throw new MathException(n + " must be an Integer");
+		} else {
+			if (tooManyArguments) System.out.println("Calculating " + n + " ROOT of " + a);
+			return iterrativeNthRootFinder((int)n,a);
 		}
 	}
 	private double iterrativeNthRootFinder (final int n, final double a) {

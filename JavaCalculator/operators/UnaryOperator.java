@@ -9,6 +9,11 @@ public abstract class UnaryOperator extends Operator{
 	public UnaryOperator (Operator op0) {
 		this.op0 = op0;
 	}
+	public UnaryOperator(VectorOperand list) {
+		if (list != null&&list.size()>0) {
+			this.op0 = list.get(0);
+		}
+	}
 	@Override
 	public boolean changed () {
 		return op0.changed();

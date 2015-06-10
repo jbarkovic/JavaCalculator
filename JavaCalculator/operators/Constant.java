@@ -3,6 +3,7 @@ package operators;
 public class Constant extends Operator{
 	private final double value;
 	public Constant (double value) {
+		super(null);
 		this.value = value;
 	}
 	@Override

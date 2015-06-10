@@ -15,6 +15,19 @@ public abstract class Operator implements Comparable<Operator> {
 			return (cachedResult=internalCalc()); 
 		}
 	}
+	protected Operator () {	
+	}
+	public Operator (Operator op) {
+		if (op instanceof VectorOperand) {
+			initialize((VectorOperand) op);
+		} else {
+			initialize(op);
+		}
+	}
+	public void initialize (VectorOperand v) {		
+	}
+	public void initialize (Operator op) {		
+	}
 	public boolean changed () {
 		return true;
 	}
